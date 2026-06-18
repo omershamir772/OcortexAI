@@ -7,7 +7,7 @@ abstract class WeightsAndBiases {
     public double[] readWeights() {
 
         //create the variable that is responsible for weights
-        double[] weights = new double[1051024];
+        double[] weights = new double[1281260]; //first layer 10,000 second layer 128 third layer 10 fourth layer (output) 2
 
         //read the file that stores the weights
         try(BufferedReader weightsFileReader = new BufferedReader(new FileReader(weightsFile))) {
@@ -15,11 +15,11 @@ abstract class WeightsAndBiases {
 
             for (int i = 0; (weight = weightsFileReader.readLine()) != null; i++) {
                 weights[i] = Double.parseDouble(weight);
-                
             }
         }
         catch (IOException error) {
             error.printStackTrace();
+
         }
 
         return weights;

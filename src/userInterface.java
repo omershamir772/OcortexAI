@@ -10,7 +10,7 @@ class userInterface {
         System.out.println("enter your text : ");
 
         //get the input
-        String text = scan.next();
+        String text = scan.nextLine();
 
         //return
         return text;

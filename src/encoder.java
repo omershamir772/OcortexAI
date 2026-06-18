@@ -8,7 +8,7 @@ class encoder {
 
     public String[] getOneHot() {
         //create the oneHot array
-        String[] Onehot = new String[9999];
+        String[] Onehot = new String[10000];
 
         //create the variable that store the file name
         String OneHotFile = "./google-10000-english-usa.txt";
@@ -28,4 +28,34 @@ class encoder {
         }
         return Onehot;
     }
+
+    public int[] SearchOneHot(String text, String[] oneHotStr) {
+        //split the text into words
+        String[] words = text.toLowerCase().split(" ");
+
+        //create a variable that stores the oneHot of words
+        int[] wordsOneHot = new int[words.length];
+
+        //try search each word  in the oneHot array
+        try {
+            for (int i = 0; i <= words.length - 1; i++) {
+                for (int k = 0; k <= oneHotStr.length - 1; k++) {
+                    if (oneHotStr[k].equals(words[i])) {
+                        wordsOneHot[i] = k;
+                        break;
+                    }
+                }
+            }
+        } catch (Throwable e) {
+            System.out.println("error" + e.getMessage());
+        }
+
+        //return wordsOneHot
+        return wordsOneHot;
+
+
+
+
+    }
+
 }

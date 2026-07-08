@@ -78,11 +78,6 @@ class forwardPropagation extends WeightsAndBiases {
 
     }
 
-    //create another function that is responsible for the calculation of the hidden layer
-    //void hiddenLayerCalculation(double[embedding], ) {
-
-    //}
-
 
 }
 

@@ -34,15 +34,18 @@ class encoder {
         String[] words = text.toLowerCase().split(" ");
 
         //create a variable that stores the oneHot of words
-        int[] wordsOneHot = new int[words.length];
+        List<Integer> wordsOneHot = new ArrayList<>();
 
         //try search each word  in the oneHot array
         try {
             for (int i = 0; i <= words.length - 1; i++) {
                 for (int k = 0; k <= oneHotStr.length - 1; k++) {
                     if (oneHotStr[k].equals(words[i])) {
-                        wordsOneHot[i] = k;
+                        wordsOneHot.add(k);
                         break;
+                    }
+                    else {
+
                     }
                 }
             }
@@ -50,8 +53,13 @@ class encoder {
             System.out.println("error" + e.getMessage());
         }
 
+        int[] result = new int[wordsOneHot.size()];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = wordsOneHot.get(i);
+        }
+
         //return wordsOneHot
-        return wordsOneHot;
+        return result;
 
 
 

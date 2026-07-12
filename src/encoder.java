@@ -4,11 +4,10 @@ import java.io.IOException;
 import java.util.*;
 
 //create a class that is responsible for encoding the input
-class encoder extends data{
+class Encoder extends Data{
 
-    public String[] getOneHot() {
-        //create the oneHot array
-        String[] OneHotStr = new String[oneHotLength];
+    public static HashMap<String, Integer> getOneHot() {        //create a hashmap
+        HashMap<String, Integer> wordMap = new HashMap<>();
 
         //create the variable that store the file name
         String OneHotFile = "./google-10000-english-usa.txt";
@@ -19,37 +18,30 @@ class encoder extends data{
 
 
             for (int i = 0; (singleOneHot = oneHotFileReader.readLine()) != null; i++) {
-                OneHotStr[i] = singleOneHot;
+                wordMap.put(singleOneHot, i);
             }
 
         }
         catch (IOException error) {
             error.printStackTrace();
         }
-        return OneHotStr;
+
+        return wordMap;
     }
 
-    public int[] SearchOneHot(String text, String[] oneHotStr) {
+    public int[] SearchOneHot(String text, HashMap<String, Integer> oneHotStr) {
         //split the text into words
-        String[] words = text.toLowerCase().split(" ");
+        String cleanedText = text.toLowerCase().replaceAll("[^a-z' ]", "");
+        String[] words = cleanedText.split("\\s+");
 
         //create a variable that stores the oneHot of words
         List<Integer> wordsOneHot = new ArrayList<>();
 
         //try search each word  in the oneHot array
-        try {
-            for (int i = 0; i <= words.length - 1; i++) {
-                for (int k = 0; k <= oneHotStr.length - 1; k++) {
-                    if (oneHotStr[k].equals(words[i])) {
-                        wordsOneHot.add(k);
-                        break;
-                    }
-                    else continue;
-
-                }
+        for (String word : words) {
+            if (oneHotStr.containsKey(word)) {
+                wordsOneHot.add(oneHotStr.get(word));
             }
-        } catch (Throwable e) {
-            System.out.println("error" + e.getMessage());
         }
 
         int[] result = new int[wordsOneHot.size()];

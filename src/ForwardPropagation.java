@@ -1,5 +1,27 @@
-class forwardPropagation extends data {
+import java.util.HashMap;
 
+//create a class that its object is used to return all of the layers parameters to use as input for the backPropagation's errorCalculation function
+class ForwardPropagationCache {
+    public double[] embedding;
+    public double[][] hiddenLayer;
+    public double[] output;
+    public int[] oneHotWords;
+
+    public ForwardPropagationCache(double[] embedding, double[][] hiddenLayer, double[] output, int[] oneHotWords) {
+        this.embedding = embedding;
+        this.hiddenLayer = hiddenLayer;
+        this.output = output;
+        this.oneHotWords = oneHotWords;
+    }
+
+}
+
+public class ForwardPropagation extends Data {
+    //read the weights
+    private double[] weights = ReadWeights();
+
+    //read the biases
+    private double[] biases = ReadBiases();
 
     //create the function that is responsible for getting and managing the input
     public String forwardPropagationInput() {
@@ -7,10 +29,10 @@ class forwardPropagation extends data {
         String text;
 
         //get userInterface object
-        userInterface user = new userInterface();
+        UserInterface user = new UserInterface();
 
         //get text
-        text = user.userInput();
+        text = user.UserInput();
 
         //return text
         return text;
@@ -18,7 +40,7 @@ class forwardPropagation extends data {
     }
 
     //create the function that is responsible for creating the oneHot
-    public int[] oneHotFiller(int wordIndex) {
+    public int[] OneHotFiller(int wordIndex) {
         int[] oneHot = new int[oneHotLength];
         oneHot[wordIndex] = 1;
 
@@ -29,19 +51,13 @@ class forwardPropagation extends data {
 
 
     //create the function that is responsible for the calculation of the forward propagation
-    public void forwardPropagationCalculation(String text) {
+    public ForwardPropagationCache ForwardPropagationCalculation(String text) {
 
         //create an object for the encoder class
-        encoder encoderObj = new encoder();
-
-        //read the weights
-        double[] weights = readWeights();
-
-        //read the biases
-        double[] biases = readBiases();
+        Encoder encoderObj = new Encoder();
 
         //read the oneHot
-        String[] oneHotStr = encoderObj.getOneHot();
+        HashMap<String, Integer> oneHotStr = encoderObj.getOneHot();
 
 
         //get embedding
@@ -49,24 +65,25 @@ class forwardPropagation extends data {
 
         //the arrays are 2d because they store all previous versions of the layers
 
-        //create the hidden layer double 2d array
+        //create the embedding array
+        double[] embedding = new double[embeddingLength];
 
+        //create the hidden layer double 2d array
         double[][] hiddenLayer = new double[oneHotWords.length][hiddenLayerLength];
 
         //create the output layer double array
         double[] output = new double[outputLayerLength];
 
-
         //create a for loop that is responsible for the RNN neural network
         for (int i = 0; i < oneHotWords.length; i++) {
 
-            int[] oneHot = oneHotFiller(oneHotWords[i]);
+            int[] oneHot = OneHotFiller(oneHotWords[i]);
 
             //calculate the embedding
-            double[] embedding = embeddingCalculation(oneHot, weights, biases);
+            embedding = EmbeddingCalculation(oneHot[i], weights, biases);
 
-
-            hiddenLayer[i] = hiddenLayersCalculation(embedding, weights, biases);
+            //calculate the raw hiddenLayer
+            hiddenLayer[i] = HiddenLayersCalculation(embedding, weights, biases);
 
             double[] hiddenLayerPast = new double[hiddenLayerLength];
 
@@ -75,34 +92,30 @@ class forwardPropagation extends data {
             }
 
             //run the hiddenState function
-            hiddenLayer[i] = hiddenState(hiddenLayerPast, hiddenLayer[i], weights, biases);
+            hiddenLayer[i] = HiddenState(hiddenLayerPast, hiddenLayer[i], weights, biases);
 
             if (i == oneHotWords.length - 1) {
                 //calculate the output layer
                 double[] outputLayer = OutputLayersCalculation(embedding, hiddenLayer[i], weights, biases);
 
                 //normalize the output layer
-                output = softmax(outputLayer);
+                output = Softmax(outputLayer);
             }
 
         }
-        //print output
-        userInterface.userOutput(output);
+
+        return new ForwardPropagationCache(embedding, hiddenLayer, output, oneHotWords);
     }
 
 
     //create the function that is responsible for the calculation of the embedding
-    public double[] embeddingCalculation(int[] oneHot, double[] weights, double[] biases) {
+    public double[] EmbeddingCalculation(int oneHot, double[] weights, double[] biases) {
         //create the embedding variable
         double[] embedding = new double[embeddingLength];
 
 
         for (int i = 0; i <= embeddingLength - 1; i++) {
-            for (int k = 0; k <= oneHotLength - 1; k++) {
-                embedding[i] = embedding[i] + oneHot[k] * weights[i * oneHotLength + k];
-            }
-            //add biases
-            embedding[i] = embedding[i] + biases[i];
+            embedding[i] = weights[i * oneHotLength + oneHot] + biases[i];
         }
 
         //return embedding
@@ -113,7 +126,7 @@ class forwardPropagation extends data {
     //create another function that is responsible for the calculation of the hidden layers
 
 
-    public double[] hiddenLayersCalculation(double[] embedding, double[] weights, double[] biases) {
+    public double[] HiddenLayersCalculation(double[] embedding, double[] weights, double[] biases) {
         double[] hiddenLayer = new double[hiddenLayerLength];
 
         int embeddingMatrixSize = embeddingLength * oneHotLength;
@@ -153,7 +166,7 @@ class forwardPropagation extends data {
         return outputLayer;
     }
 
-    public double[] hiddenState(double[] hiddenLayerPast, double[] hiddenLayerNow ,double[] weights, double[] biases) {
+    public double[] HiddenState(double[] hiddenLayerPast, double[] hiddenLayerNow ,double[] weights, double[] biases) {
 
         int hiddenStateMatrixSize = embeddingLength * oneHotLength + hiddenLayerLength * embeddingLength + outputLayerLength * hiddenLayerLength;
 
@@ -184,6 +197,8 @@ class forwardPropagation extends data {
 
 
 }
+
+
 
 
 
